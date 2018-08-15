@@ -2,7 +2,7 @@ from __future__ import print_function
 import numpy as np
 from keras.datasets import mnist
 from keras.models import Sequential
-from keras.layers.core import Dense, Activation
+from keras.layers.core import Dense, Activation, Dropout
 from keras.optimizers import SGD
 from keras.utils import np_utils
 np.random.seed(1671)
@@ -14,6 +14,7 @@ NB_CLASSES = 10
 OPTIMIZER = SGD()
 N_HIDEN = 128
 VALIDATION_SPLIT = 0.2
+DROP_OUT = 0.3
 
 (x_train, y_train) , (x_test, y_test) = mnist.load_data()
 
@@ -34,8 +35,20 @@ y_test = np_utils.to_categorical(y_test, NB_CLASSES)
 
 
 model = Sequential()
-model.add(Dense(NB_CLASSES, input_shape=(RESHAPED,)))
+
+model.add(Dense(N_HIDEN, input_shape=(RESHAPED,)))
+model.add(Activation('relu'))
+
+model.add(Dropout(DROP_OUT))
+
+model.add(Dense(N_HIDEN))
+model.add(Activation('relu'))
+
+model.add(Dropout(DROP_OUT))
+
+model.add(Dense(NB_CLASSES))
 model.add(Activation('softmax'))
+
 model.summary()
 
 model.compile(loss='categorical_crossentropy', optimizer=OPTIMIZER, metrics=['accuracy'])
